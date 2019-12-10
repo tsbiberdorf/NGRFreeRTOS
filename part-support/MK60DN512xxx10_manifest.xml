@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:manifest xmlns:ns2="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd" format_version="3.0" api_version="2.0.0" configuration="d4f7be1e6e18e91dc8132ebdeef801e5" id="SDK_2.x_MK60DN512xxx10" name="SDK version 2.2.0 package for MK60DN512xxx10 device" brief="This is SDK version 2.2.0 manifest file. It describes the content of the SDK version 2.2.0 package for MK60DN512xxx10 device and additional settings for tools that support SDK version 2.2.0">
+    <defines>
+        <define name="CPU_$|package|_$|core|" value=""/>
+        <define name="CPU_$|package|" value=""/>
+    </defines>
+    <ksdk id="KSDK220" name="KSDK220" version="2.2.0"/>
+    <compilers>
+        <compiler type="gcc" id="compiler_gcc" name="gcc"/>
+    </compilers>
+    <toolchainSettings>
+        <toolchainSetting id="com.nxp.mcuxpresso" name="mcuxpresso" full_name="MCUXpresso IDE" version="1.0.0" toolchain="mcuxpresso" compiler="compiler_gcc">
+            <option id="gnu.cpp.compiler.option.optimization.flags" type="string" user_name="">
+                <value>-fno-common</value>
+            </option>
+            <option id="gnu.cpp.compiler.option.misc.other" type="string" user_name="">
+                <value>-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections</value>
+            </option>
+            <option id="com.crt.advproject.gpp.hdrlib" type="enum" user_name="">
+                <value>Newlib</value>
+            </option>
+            <option id="gnu.c.compiler.option.optimization.flags" type="string" user_name="">
+                <value>-fno-common</value>
+            </option>
+            <option id="gnu.c.compiler.option.misc.other" type="string" user_name="">
+                <value>-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections</value>
+            </option>
+            <option id="com.crt.advproject.gcc.hdrlib" type="enum" user_name="">
+                <value>Redlib</value>
+            </option>
+            <option id="com.crt.advproject.gas.hdrlib" type="enum" user_name="">
+                <value>Redlib</value>
+            </option>
+            <option id="gnu.cpp.link.option.nostdlibs" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="gnu.cpp.link.option.other" type="stringList" user_name="">
+                <value>-Map="${BuildArtifactFileBaseName}.map"</value>
+                <value>--gc-sections</value>
+                <value>-print-memory-usage</value>
+            </option>
+            <option id="com.crt.advproject.link.cpp.manage" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="com.crt.advproject.link.cpp.flashconfigenable" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="com.crt.advproject.link.flashconfigenable" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="com.crt.advproject.link.cpp.hdrlib" type="enum" user_name="">
+                <value>com.crt.advproject.cpp.link.hdrlib.newlib.semihost</value>
+            </option>
+            <option id="gnu.c.link.option.nostdlibs" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="gnu.c.link.option.other" type="stringList" user_name="">
+                <value>-Map="${BuildArtifactFileBaseName}.map"</value>
+                <value>--gc-sections</value>
+                <value>-print-memory-usage</value>
+            </option>
+            <option id="com.crt.advproject.link.manage" type="boolean" user_name="">
+                <value>true</value>
+            </option>
+            <option id="com.crt.advproject.link.gcc.hdrlib" type="enum" user_name="">
+                <value>com.crt.advproject.gcc.link.hdrlib.codered.semihost</value>
+            </option>
+        </toolchainSetting>
+    </toolchainSettings>
+    <toolchains>
+        <toolchain type="mcuxpresso" vendor="NXP Semiconductors" vendor_url="http://www.nxp.com" id="mcuxpresso" name="MCUXpresso_IDE" full_name="MCUXpresso IDE" version="10.0" compiler="compiler_gcc">
+            <debug>
+                <debug_configuration probe="LinkServer" id="com.crt.advproject.config.exe.debug" name="Debug Configuration">
+                    <scripts>
+                        <script type="init" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>
+set remotetimeout 60000
+##target_extended_remote##
+set mem inaccessible-by-default ${mem.access}
+mon ondisconnect ${ondisconnect}
+set arm force-mode thumb
+${load}
+        </script>
+                        </script>
+                        <script type="run" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>
+${run}
+        </script>
+                        </script>
+                    </scripts>
+                    <params>
+                        <params value="false" id="vector.catch.debug.mcuxpresso" name="vector.catch"/>
+                        <params value="Disable" id="internal.cache.debug.mcuxpresso" name="internal.cache"/>
+                    </params>
+                </debug_configuration>
+                <debug_configuration probe="LinkServer" id="com.crt.advproject.config.exe.release" name="Release Configuration">
+                    <scripts>
+                        <script type="init" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>
+set remotetimeout 60000
+##target_extended_remote##
+set mem inaccessible-by-default ${mem.access}
+mon ondisconnect ${ondisconnect}
+set arm force-mode thumb
+${load}
+        </script>
+                        </script>
+                        <script type="run" silent="false" emulators="${gdb.stub} -mi -info-emu">
+                            <script>
+${run}
+        </script>
+                        </script>
+                    </scripts>
+                    <params>
+                        <params value="false" id="vector.catch.release.mcuxpresso" name="vector.catch"/>
+                        <params value="Disable" id="internal.cache.release.mcuxpresso" name="internal.cache"/>
+                    </params>
+                </debug_configuration>
+            </debug>
+        </toolchain>
+    </toolchains>
+    <boards>
+        <board package="MK60DN512VMD10" id="twrk60d100m" name="TWR-K60D100M" href="http://www.nxp.com/twr-k60d100m" version="1.0.0">
+            <description>
+TWR-K60D100M: Kinetis K60 100 MHz MCU Tower System Module
+        </description>
+            <image path="docs/images" type="image">
+                <files mask="TWR-K60D100M.gif"/>
+            </image>
+            <metadataSet>
+                <metadata key="vendor" value="NXP"/>
+                <metadata key="html">
+                    <specific>
+                        <content xmlns:ksdk="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+The TWR-K60D100M is a development tool for the 100 MHz K60, K20, and K10 families of Kinetis® microcontrollers.
+
+The TWR-K60D100M operates as a standalone debug tool and can also be combined and used as part of the modular Tower® System development platform.
+        </content>
+                    </specific>
+                </metadata>
+            </metadataSet>
+            <total_memory flash_size_kb="0" ram_size_kb="0"/>
+        </board>
+    </boards>
+    <devices>
+        <device id="MK60DN512xxx10" name="MK60D10" full_name="MK60DN512xxx10" href="http://www.nxp.com/kinetis" version="1.0.0">
+            <description>
+K60_100: Kinetis® K60-100 MHz, Mixed-Signal Integration Microcontrollers (MCUs) based on ARM® Cortex®-M4 Core
+        </description>
+            <image path="docs/images" type="image">
+                <files mask="device.jpg"/>
+            </image>
+            <metadataSet>
+                <metadata key="USB_KHCI_COUNT" value="1"/>
+                <metadata key="vendor" value="NXP"/>
+                <metadata key="vendor.device.type" value="Kinetis"/>
+                <metadata key="html">
+                    <specific>
+                        <content xmlns:ksdk="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+The Kinetis® K60 100 MHz IEEE® 1588 Ethernet MCUs are built on the ARM® Cortex®-M4 core and feature advanced analog integration and serial communication. Available down to a 5 mm x 5 mm wafer-level chip-scale package (WLCSP), these devices maximize board space and enhance performance with minimum-length interconnections, allowing the miniaturization of existing applications. This family shares the comprehensive enablement and scalability of the Kinetis portfolio.
+        </content>
+                    </specific>
+                </metadata>
+                <metadata key="vendor.device.family" value="K6x"/>
+            </metadataSet>
+            <core fpu="false" type="cm4" id="core0_MK60DN512xxx10" name="core0"/>
+            <memory>
+                <memoryBlock addr="00000000" size="00080000" type="Flash" access="RO" id="PROGRAM_FLASH_MK60DN512xxx10" name="PROGRAM_FLASH"/>
+                <memoryBlock addr="20000000" size="00010000" type="RAM" access="RW" id="SRAM_UPPER_MK60DN512xxx10" name="SRAM_UPPER"/>
+                <memoryBlock addr="1FFF0000" size="00010000" type="RAM" access="RW" id="SRAM_LOWER_MK60DN512xxx10" name="SRAM_LOWER"/>
+                <memoryBlock addr="14000000" size="00001000" type="RAM" access="RW" id="FLEX_RAM_MK60DN512xxx10" name="FLEX_RAM"/>
+            </memory>
+            <total_memory flash_size_kb="512" ram_size_kb="4"/>
+            <package id="MK60DN512VLL10" name="MK60DN512VLL10"/>
+            <package id="MK60DN512VLQ10" name="MK60DN512VLQ10"/>
+            <package id="MK60DN512VMC10" name="MK60DN512VMC10"/>
+            <package id="MK60DN512VMD10" name="MK60DN512VMD10"/>
+            <evaluation_boards>
+                <evaluation_board name="twrk60d100m"/>
+            </evaluation_boards>
+            <debug_configurations>
+                <debug_configuration id_refs="com.crt.advproject.config.exe.debug com.crt.advproject.config.exe.release">
+                    <params>
+                        <params value="SWD*,JTAG" id="internal.wiretype.release.MK60DN512xxx10" name="internal.wiretype"/>
+                        <params value="true" id="internal.has_swo.release.MK60DN512xxx10" name="internal.has_swo"/>
+                        <params value="kinetisconnect.scp" id="internal.connect.script.debug.mcuxpresso.MK60DN512xxx10" name="internal.connect.script"/>
+                    </params>
+                    <drivers>
+                        <driver id_refs="PROGRAM_FLASH_MK60DN512xxx10">
+                            <driverBinary path="devices/MK60D10/mcuxpresso" type="binary">
+<files mask="FTFL_2K.cfx"/>
+                            </driverBinary>
+                        </driver>
+                    </drivers>
+                </debug_configuration>
+            </debug_configurations>
+            <linkerSettings nature="c_nature">
+                <linker property="start_symbol" value="ResetISR"/>
+                <linker property="text_align" value="4"/>
+                <linker property="data_align" value="4"/>
+                <linker property="bss_align" value="4"/>
+                <linker property="flash_security_address" value="0x400"/>
+                <linker property="mtb_supported" value="false"/>
+            </linkerSettings>
+            <linkerSettings nature="cpp_nature">
+                <linker property="start_symbol" value="ResetISR"/>
+                <linker property="text_align" value="4"/>
+                <linker property="data_align" value="4"/>
+                <linker property="bss_align" value="4"/>
+                <linker property="flash_security_address" value="0x400"/>
+                <linker property="mtb_supported" value="false"/>
+            </linkerSettings>
+        </device>
+    </devices>
+    <components>
+        <component type="debugger" devices="MK60DN512xxx10" id="platform.devices.MK60D10_debugger.MK60D10" name="MK60D10_debugger" version="1.0.0">
+            <source path="devices/MK60D10" type="xml">
+                <files mask="MK60D10.xml"/>
+            </source>
+        </component>
+        <component type="debugger" devices="MK60DN512xxx10" id="platform.devices.MK60D10_flash.MK60D10" name="MK60D10_flash" version="1.0.0">
+            <source path="devices/MK60D10/mcuxpresso" type="binary" toolchain="mcuxpresso">
+                <files mask="FTFL_2K.cfx"/>
+            </source>
+        </component>
+    </components>
+</ns2:manifest>
