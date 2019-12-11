@@ -32,6 +32,13 @@
  * @file    NGRRelay.c
  * @brief   Application entry point.
  */
+
+/* FreeRTOS kernel includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "timers.h"
+
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -39,9 +46,33 @@
 #include "clock_config.h"
 #include "MK60D10.h"
 #include "fsl_debug_console.h"
+#include "TaskParameters.h"
+#include "UartTasks/UartTasks.h"
+
+
 /* TODO: insert other include files here. */
 
+#define Hellotask_PRIORITY (configMAX_PRIORITIES - 1)
+
 /* TODO: insert other definitions and declarations here. */
+/*!
+ * @brief Task responsible for printing of "Hello world." message.
+ */
+static void HelloTask(void *pvParameters)
+{
+    size_t n=0;
+
+    while(1)
+    {
+    	printf("hello %d\r\n",n++);
+
+    	vTaskDelay(100);
+
+    }
+
+
+    vTaskSuspend(NULL);
+}
 
 /*
  * @brief   Application entry point.
@@ -56,11 +87,12 @@ int main(void) {
 
     PRINTF("Hello World\n");
 
-    /* Force the counter to be placed into memory. */
-    volatile static int i = 0 ;
-    /* Enter an infinite loop, just incrementing a counter. */
-    while(1) {
-        i++ ;
-    }
+    xTaskCreate(HelloTask, "Hellotask", configMINIMAL_STACK_SIZE + 10, NULL, Hellotask_PRIORITY, NULL);
+    xTaskCreate(DebugTask, DebugTaskName, DEBUG_TASK_STACK_SIZE , NULL, DEBUG_TASK_PRIORITY, NULL);
+
+    vTaskStartScheduler();
+    for (;;)
+        ;
+
     return 0 ;
 }
