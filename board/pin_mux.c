@@ -7,11 +7,11 @@
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Pins v5.0
+product: Pins v6.0
 processor: MK60DN512xxx10
 package_id: MK60DN512VLL10
 mcu_data: ksdk2_0
-processor_version: 5.0.0
+processor_version: 6.0.0
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -46,8 +46,8 @@ BOARD_InitPins:
   - {pin_num: '47', peripheral: ENET, signal: MII_TXD1, pin_signal: ADC1_SE17/PTA17/SPI0_SIN/UART0_RTS_b/RMII0_TXD1/MII0_TXD1/I2S0_MCLK}
   - {pin_num: '53', peripheral: ENET, signal: MII_MDIO, pin_signal: ADC0_SE8/ADC1_SE8/TSI0_CH0/PTB0/LLWU_P5/I2C0_SCL/FTM1_CH0/RMII0_MDIO/MII0_MDIO/FTM1_QD_PHA}
   - {pin_num: '54', peripheral: ENET, signal: MII_MDC, pin_signal: ADC0_SE9/ADC1_SE9/TSI0_CH6/PTB1/I2C0_SDA/FTM1_CH1/RMII0_MDC/MII0_MDC/FTM1_QD_PHB}
-  - {pin_num: '90', peripheral: UART3, signal: RX, pin_signal: PTC16/CAN1_RX/UART3_RX/ENET0_1588_TMR0/FB_CS5_b/FB_TSIZ1/FB_BE23_16_b}
-  - {pin_num: '91', peripheral: UART3, signal: TX, pin_signal: PTC17/CAN1_TX/UART3_TX/ENET0_1588_TMR1/FB_CS4_b/FB_TSIZ0/FB_BE31_24_b}
+  - {pin_num: '58', peripheral: UART3, signal: RX, pin_signal: ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1}
+  - {pin_num: '59', peripheral: UART3, signal: TX, pin_signal: ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -64,8 +64,6 @@ void BOARD_InitPins(void)
     CLOCK_EnableClock(kCLOCK_PortA);
     /* Port B Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortB);
-    /* Port C Clock Gate Control: Clock enabled */
-    CLOCK_EnableClock(kCLOCK_PortC);
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
 
@@ -93,11 +91,11 @@ void BOARD_InitPins(void)
     /* PORTB1 (pin 54) is configured as MII0_MDC */
     PORT_SetPinMux(PORTB, 1U, kPORT_MuxAlt4);
 
-    /* PORTC16 (pin 90) is configured as UART3_RX */
-    PORT_SetPinMux(PORTC, 16U, kPORT_MuxAlt3);
+    /* PORTB10 (pin 58) is configured as UART3_RX */
+    PORT_SetPinMux(PORTB, 10U, kPORT_MuxAlt3);
 
-    /* PORTC17 (pin 91) is configured as UART3_TX */
-    PORT_SetPinMux(PORTC, 17U, kPORT_MuxAlt3);
+    /* PORTB11 (pin 59) is configured as UART3_TX */
+    PORT_SetPinMux(PORTB, 11U, kPORT_MuxAlt3);
 
     /* PORTE26 (pin 33) is configured as ENET_1588_CLKIN */
     PORT_SetPinMux(PORTE, 26U, kPORT_MuxAlt2);
