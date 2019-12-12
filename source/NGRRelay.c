@@ -61,12 +61,14 @@
 static void HelloTask(void *pvParameters)
 {
     size_t n=0;
+    static uint8_t tl_Data[32];
 
     while(1)
     {
-    	printf("hello %d\r\n",n++);
+    	sprintf(tl_Data,"hello %d\r\n",n++);
+    	printf("%s",tl_Data);
 
-    	vTaskDelay(100);
+    	vTaskDelay(10000);
 
     }
 

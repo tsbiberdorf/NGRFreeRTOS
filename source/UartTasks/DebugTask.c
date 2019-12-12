@@ -74,7 +74,6 @@ void DEBUG_UART_IRQHANDLER(void)
 
 void DebugTask(void *pvParameters)
 {
-	uint16_t cnt = 0;
     uart_config_t config;
     /*
      * config.baudRate_Bps = 115200U;
@@ -100,10 +99,10 @@ void DebugTask(void *pvParameters)
     NVIC_SetPriority(DEBUG_UART_IRQn, 1);
     EnableIRQ(DEBUG_UART_IRQn);
 
+	printf("debug Task started \r\n");
 
 	while(1)
 	{
-		printf("debug Task %d\r\n",cnt++);
 
         /* Send data only when UART TX register is empty and ring buffer has data to send out. */
         while ((kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) && (rxIndex != txIndex))
@@ -113,6 +112,6 @@ void DebugTask(void *pvParameters)
             txIndex++;
             txIndex %= DEBUG_RING_BUFFER_SIZE;
         }
-		vTaskDelay(100);
+		vTaskDelay(10);
 	}
 }
