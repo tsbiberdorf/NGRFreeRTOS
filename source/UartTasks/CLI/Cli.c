@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "../DebugTask.h"
+#include "GPIO/GpiocOperations.h"
 
 #define CLI_BUFFER_SIZE (128)
 
@@ -18,6 +19,7 @@ static uint16_t tl_cliIdx = 0;
 typedef struct _cliCommandOptions_s
 {
 	const char *option;
+	const uint8_t optionSize;
 	int32_t (*optionCallback)(char *);
 }s_cliCommandOptions_t;
 
@@ -46,7 +48,7 @@ int32_t helpCmd(char *Param)
 }
 
 s_cliCommandOptions_t helpOptions[]= {
-		{"-h",helpCmd},{"-?",helpCmd},{NULL,helpCmd}
+		{"-h",2,helpCmd},{"-?",2,helpCmd},{NULL,0,helpCmd}
 };
 
 const char *gpioCmdText[] = {
@@ -71,9 +73,9 @@ static int32_t gpioPinConfiguration(char *Param)
 {
 	size_t strSize = CLI_BUFFER_SIZE;
 	printf("gpio pin configuration \r\n");
-	getInputPinConfiguration((uint8_t *)tl_cliData,&strSize);
+	getInputPinConfiguration((char *)tl_cliData,&strSize);
 
-	DebugTaskWrite(tl_cliData,strSize);
+	DebugTaskWrite((char *)tl_cliData,strSize);
 
 	return 0;
 }
@@ -83,12 +85,29 @@ static int32_t gpioPinSelect(char *Param)
 	printf("gpio pin select\r\n");
 	return 0;
 }
-
+static int32_t gpioPullupPwrSelect(char *Param)
+{
+	printf("gpio pin pullup power select\r\n");
+	return 0;
+}
+static int32_t gpioPassiveFilterSelect(char *Param)
+{
+	printf("gpio pin passive filter select\r\n");
+	return 0;
+}
+static int32_t gpioActiveFilterSelect(char *Param)
+{
+	printf("gpio pin active filter select\r\n");
+	return 0;
+}
 s_cliCommandOptions_t gpioOptions[]= {
-		{"-p",gpioPinSelect},
-		{"-c",gpioPinConfiguration},
+		{"-pf",3,gpioPassiveFilterSelect},
+		{"-af",3,gpioActiveFilterSelect},
+		{"-pp",3,gpioPullupPwrSelect},
+		{"-c",2,gpioPinConfiguration},
+		{"-p",2,gpioPinSelect},
 
-		{"-h",gpioHelpCmd},{"-?",gpioHelpCmd},{NULL,gpioHelpCmd}
+		{"-h",2,gpioHelpCmd},{"-?",2,gpioHelpCmd},{NULL,0,gpioHelpCmd}
 };
 
 s_cliCommands_t userCmds[]= {
@@ -99,26 +118,51 @@ s_cliCommands_t userCmds[]= {
 
 int32_t LoopOptions(s_cliCommands_t *UserCmdOptions,uint8_t *PtrOption)
 {
+#define MAX_OPTION_SIZE (5) // max size the option field can be
+	char userOption[MAX_OPTION_SIZE],*ptrUserOption;
 	int8_t idx;
 	int8_t optionSize=0;
 	int32_t status = -1;
+	int8_t userOptionSize=0;
 
+	ptrUserOption = PtrOption;
+	idx = 0;
+	while( (ptrUserOption[idx] != ' ') && (ptrUserOption[idx] != 0))
+	{
+		userOption[idx] = ptrUserOption[idx];
+		idx++;
+		userOptionSize++;
+		if(idx == MAX_OPTION_SIZE)
+		{
+			printf("unknown command\r\n");
+			status = -1;
+			goto exitMethod;
+		}
+		else
+		{
+			userOption[idx] = 0;
+		}
+	}
 	for(idx=0; UserCmdOptions->option[idx].option != NULL;)
 	{
-		optionSize = strlen(UserCmdOptions->option[idx].option);
-		if( strncmp((char *)PtrOption,UserCmdOptions->option[idx].option,optionSize) == 0)
+		optionSize = UserCmdOptions->option[idx].optionSize; // str len of the option to compare against
+//		userOptionSize = strlen(PtrOption); // str len of the option requested by the user
+		if(optionSize == userOptionSize)
 		{
-			/*
-			 * we have a matching option and the pointer to where the parameter
-			 * will be located.
-			 */
-
-			/*
-			 * verify we have a method to call
-			 */
-			if( UserCmdOptions->option[idx].optionCallback != 0)
+			if( strncmp(userOption,UserCmdOptions->option[idx].option,optionSize) == 0)
 			{
-				status = UserCmdOptions->option[idx].optionCallback((char *)(PtrOption+optionSize));
+				/*
+				 * we have a matching option and the pointer to where the parameter
+				 * will be located.
+				 */
+
+				/*
+				 * verify we have a method to call
+				 */
+				if( UserCmdOptions->option[idx].optionCallback != 0)
+				{
+					status = UserCmdOptions->option[idx].optionCallback((char *)(PtrOption+optionSize));
+				}
 			}
 		}
 		idx++;
@@ -138,7 +182,7 @@ int32_t LoopOptions(s_cliCommands_t *UserCmdOptions,uint8_t *PtrOption)
 		}
 	}
 
-
+	exitMethod:
 	return status;
 }
 
