@@ -83,7 +83,7 @@ void DEBUG_UART_IRQHANDLER(void)
  * @param Size number of bytes to send
  * @return retCode
  */
-uint32_t DebugTaskWrite(const uint8_t *WriteData,size_t Size)
+uint32_t DebugTaskWrite(const uint8_t *WriteData, size_t Size)
 {
 	uint32_t retCode = 0;
 	uint16_t idx;

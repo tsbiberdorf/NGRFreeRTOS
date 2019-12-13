@@ -49,7 +49,29 @@ s_cliCommandOptions_t helpOptions[]= {
 		{"-h",helpCmd},{"-?",helpCmd},{NULL,helpCmd}
 };
 
+static const char *gpioCmdText[] = {
+		"gpio help commands:\r\n",
+		"gpio\r\n",
+		"\0"
+};
+
+int32_t gpioHelpCmd(char *Param)
+{
+	uint16_t helpIdx=0;
+	while(helpCmdText[helpIdx][0])
+	{
+		DebugTaskWrite(gpioCmdText[helpIdx],strlen(gpioCmdText[helpIdx]));
+		helpIdx++;
+	}
+	return 0;
+}
+
+s_cliCommandOptions_t gpioOptions[]= {
+		{"-h",gpioHelpCmd},{"-?",gpioHelpCmd},{NULL,gpioHelpCmd}
+};
+
 s_cliCommands_t userCmds[]= {
+		{"gpio",gpioOptions},
 		{"help" ,helpOptions},
 		{NULL,NULL}
 };
