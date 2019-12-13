@@ -9,6 +9,7 @@
 #define GPIO_GPIOCOPERATIONS_H_
 
 
+void getInputPinConfiguration(char *PtrCurrentConfiguration,size_t *PtrSize);
 void GpioTask(void *pvParameters);
 
 #endif /* GPIO_GPIOCOPERATIONS_H_ */

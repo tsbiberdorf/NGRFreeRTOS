@@ -49,16 +49,17 @@ s_cliCommandOptions_t helpOptions[]= {
 		{"-h",helpCmd},{"-?",helpCmd},{NULL,helpCmd}
 };
 
-static const char *gpioCmdText[] = {
+const char *gpioCmdText[] = {
 		"gpio help commands:\r\n",
-		"gpio\r\n",
+		"-p pin select\r\n",
+		"-c current configuration\r\n",
 		"\0"
 };
 
-int32_t gpioHelpCmd(char *Param)
+static int32_t gpioHelpCmd(char *Param)
 {
 	uint16_t helpIdx=0;
-	while(helpCmdText[helpIdx][0])
+	while(gpioCmdText[helpIdx][0])
 	{
 		DebugTaskWrite(gpioCmdText[helpIdx],strlen(gpioCmdText[helpIdx]));
 		helpIdx++;
@@ -66,7 +67,27 @@ int32_t gpioHelpCmd(char *Param)
 	return 0;
 }
 
+static int32_t gpioPinConfiguration(char *Param)
+{
+	size_t strSize = CLI_BUFFER_SIZE;
+	printf("gpio pin configuration \r\n");
+	getInputPinConfiguration((uint8_t *)tl_cliData,&strSize);
+
+	DebugTaskWrite(tl_cliData,strSize);
+
+	return 0;
+}
+
+static int32_t gpioPinSelect(char *Param)
+{
+	printf("gpio pin select\r\n");
+	return 0;
+}
+
 s_cliCommandOptions_t gpioOptions[]= {
+		{"-p",gpioPinSelect},
+		{"-c",gpioPinConfiguration},
+
 		{"-h",gpioHelpCmd},{"-?",gpioHelpCmd},{NULL,gpioHelpCmd}
 };
 

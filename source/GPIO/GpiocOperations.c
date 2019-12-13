@@ -33,6 +33,37 @@
 
 static uint32_t tl_ButtonPressed = false;
 
+typedef enum _PullUpPower_e
+{
+	ePullUpPowerLow,
+	ePullUpPowerHigh,
+}ePullUpPower_t;
+
+typedef enum _PassiveFilter_e
+{
+	ePassiveFilterOff,
+	ePassiveFilterOn,
+}ePassiveFilter_t;
+
+typedef enum _ActiveFilter_e
+{
+	eActiveFilterOff,
+	eActiveFilterOn,
+}eActiveFilter_t;
+
+typedef struct _InputPinOperation_s
+{
+	uint32_t PinSelection;
+	ePullUpPower_t PullUpPower;
+	ePassiveFilter_t PassiveFilter;
+	ePassiveFilter_t ActiveFilter;
+}sInputPinOperation_t;
+
+sInputPinOperation_t tl_CurrentInputPin = {
+		.PullUpPower=ePullUpPowerHigh,
+		.PassiveFilter=ePassiveFilterOn,
+		.ActiveFilter=eActiveFilterOff};
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -57,6 +88,23 @@ void PORTC_IRQHandler(void)
 }
 
 
+/**
+ * @brief set the input pin
+ */
+uint32_t setInputPin(uint32_t Pin)
+{
+
+	return Pin;
+}
+
+void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
+{
+	size_t sentSize = 0;
+	char *ptrDetails = CurrentConfigurationPtr;
+	sentSize = strlen("Input Pin: ");
+	memcpy(ptrDetails,"Input Pin: ",sentSize);
+	*Size = sentSize;
+}
 
 void GpioTask(void *pvParameters)
 {
