@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding= "UTF-8" ?>
+<configuration name="" version="1.5" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.5 http://mcuxpresso.nxp.com/XSD/mex_configuration_1.5.xsd" uuid="c550a7e9-275a-4304-80b7-370ea0db23f9" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <common>
+      <processor>MK60DN512xxx10</processor>
+      <package>MK60DN512VLL10</package>
+      <board></board>
+      <mcu_data>ksdk2_0</mcu_data>
+      <cores selected="core0">
+         <core name="Cortex-M4" id="core0" description="M4 core"/>
+      </cores>
+      <description>Configuration imported from NGRRelay</description>
+   </common>
+   <preferences>
+      <validate_boot_init_only>true</validate_boot_init_only>
+      <generate_extended_information>false</generate_extended_information>
+   </preferences>
+   <tools>
+      <pins name="Pins" version="5.0" enabled="true" update_project_code="true">
+         <generated_project_files>
+            <file path="board/pin_mux.c" update_enabled="true"/>
+            <file path="board/pin_mux.h" update_enabled="true"/>
+         </generated_project_files>
+         <pins_profile>
+            <processor_version>5.0.0</processor_version>
+         </pins_profile>
+         <functions_list>
+            <function name="BOARD_InitPins">
+               <description>Configures pin routing and optionally pin electrical features.</description>
+               <options>
+                  <callFromInitBoot>true</callFromInitBoot>
+                  <coreID>core0</coreID>
+                  <enableClock>true</enableClock>
+               </options>
+               <dependencies>
+                  <dependency resourceType="Peripheral" resourceId="ENET" description="Peripheral ENET is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="Peripheral" resourceId="UART3" description="Peripheral UART3 is not initialized" problem_level="1" source="Pins:BOARD_InitPins">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
+                     <feature name="enabled" evaluation="equal" configuration="core0">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.port" description="Pins initialization requires the PORT Driver in the project." problem_level="2" source="Pins:BOARD_InitPins">
+                     <feature name="enabled" evaluation="equal" configuration="core0">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+               </dependencies>
+               <pins>
+                  <pin peripheral="ENET" signal="CLKIN_1588" pin_num="33" pin_signal="PTE26/ENET_1588_CLKIN/UART4_CTS_b/RTC_CLKOUT/USB_CLKIN"/>
+                  <pin peripheral="ENET" signal="MII_RXER" pin_num="39" pin_signal="PTA5/USB_CLKIN/FTM0_CH2/RMII0_RXER/MII0_RXER/CMP2_OUT/I2S0_TX_BCLK/JTAG_TRST_b"/>
+                  <pin peripheral="ENET" signal="MII_RXD1" pin_num="42" pin_signal="CMP2_IN0/PTA12/CAN0_TX/FTM1_CH0/RMII0_RXD1/MII0_RXD1/I2S0_TXD0/FTM1_QD_PHA"/>
+                  <pin peripheral="ENET" signal="MII_RXD0" pin_num="43" pin_signal="CMP2_IN1/PTA13/LLWU_P4/CAN0_RX/FTM1_CH1/RMII0_RXD0/MII0_RXD0/I2S0_TX_FS/FTM1_QD_PHB"/>
+                  <pin peripheral="ENET" signal="mii_txen" pin_num="45" pin_signal="PTA15/SPI0_SCK/UART0_RX/RMII0_TXEN/MII0_TXEN/I2S0_RXD0"/>
+                  <pin peripheral="ENET" signal="MII_TXD0" pin_num="46" pin_signal="PTA16/SPI0_SOUT/UART0_CTS_b/UART0_COL_b/RMII0_TXD0/MII0_TXD0/I2S0_RX_FS/I2S0_RXD1"/>
+                  <pin peripheral="ENET" signal="MII_TXD1" pin_num="47" pin_signal="ADC1_SE17/PTA17/SPI0_SIN/UART0_RTS_b/RMII0_TXD1/MII0_TXD1/I2S0_MCLK"/>
+                  <pin peripheral="ENET" signal="MII_MDIO" pin_num="53" pin_signal="ADC0_SE8/ADC1_SE8/TSI0_CH0/PTB0/LLWU_P5/I2C0_SCL/FTM1_CH0/RMII0_MDIO/MII0_MDIO/FTM1_QD_PHA"/>
+                  <pin peripheral="ENET" signal="MII_MDC" pin_num="54" pin_signal="ADC0_SE9/ADC1_SE9/TSI0_CH6/PTB1/I2C0_SDA/FTM1_CH1/RMII0_MDC/MII0_MDC/FTM1_QD_PHB"/>
+                  <pin peripheral="UART3" signal="RX" pin_num="58" pin_signal="ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1"/>
+                  <pin peripheral="UART3" signal="TX" pin_num="59" pin_signal="ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2"/>
+               </pins>
+            </function>
+         </functions_list>
+      </pins>
+      <clocks name="Clocks" version="5.0" enabled="true" update_project_code="true">
+         <generated_project_files>
+            <file path="board/clock_config.c" update_enabled="true"/>
+            <file path="board/clock_config.h" update_enabled="true"/>
+         </generated_project_files>
+         <clocks_profile>
+            <processor_version>5.0.0</processor_version>
+         </clocks_profile>
+         <clock_configurations>
+            <clock_configuration name="BOARD_BootClockRUN">
+               <description></description>
+               <options/>
+               <dependencies>
+                  <dependency resourceType="PinSignal" resourceId="OSC.EXTAL0" description="&apos;EXTAL0&apos; (Pins tool id: OSC.EXTAL0, Clocks tool id: OSC.EXTAL0) needs to be routed" problem_level="1" source="Clocks:BOARD_BootClockRUN">
+                     <feature name="routed" evaluation="">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PinSignal" resourceId="OSC.EXTAL0" description="&apos;EXTAL0&apos; (Pins tool id: OSC.EXTAL0, Clocks tool id: OSC.EXTAL0) needs to have &apos;INPUT&apos; direction" problem_level="1" source="Clocks:BOARD_BootClockRUN">
+                     <feature name="direction" evaluation="">
+                        <data>INPUT</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PinSignal" resourceId="OSC.XTAL0" description="&apos;XTAL0&apos; (Pins tool id: OSC.XTAL0, Clocks tool id: OSC.XTAL0) needs to be routed" problem_level="1" source="Clocks:BOARD_BootClockRUN">
+                     <feature name="routed" evaluation="">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PinSignal" resourceId="OSC.XTAL0" description="&apos;XTAL0&apos; (Pins tool id: OSC.XTAL0, Clocks tool id: OSC.XTAL0) needs to have &apos;OUTPUT&apos; direction" problem_level="1" source="Clocks:BOARD_BootClockRUN">
+                     <feature name="direction" evaluation="">
+                        <data>OUTPUT</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="PinSignal" resourceId="ENET.CLKIN_1588" description="&apos;ENET 1588 clock input&apos; (Pins tool id: ENET.CLKIN_1588, Clocks tool id: SIM.ENET_1588_CLKIN) needs to be routed" problem_level="1" source="Clocks:BOARD_BootClockRUN">
+                     <feature name="routed" evaluation="">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Clocks initialization requires the COMMON Driver in the project." problem_level="2" source="Clocks:BOARD_BootClockRUN">
+                     <feature name="enabled" evaluation="equal" configuration="core0">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
+               </dependencies>
+               <clock_sources>
+                  <clock_source id="OSC.OSC.outFreq" value="24 MHz" locked="false" enabled="true"/>
+                  <clock_source id="SIM.ENET_1588_CLK_EXT.outFreq" value="50 MHz" locked="false" enabled="true"/>
+               </clock_sources>
+               <clock_outputs>
+                  <clock_output id="Bus_clock.outFreq" value="48 MHz" locked="true" accuracy="0.001"/>
+                  <clock_output id="Core_clock.outFreq" value="96 MHz" locked="true" accuracy="0.001"/>
+                  <clock_output id="Flash_clock.outFreq" value="24 MHz" locked="true" accuracy="0.001"/>
+                  <clock_output id="FlexBus_clock.outFreq" value="48 MHz" locked="true" accuracy="0.001"/>
+                  <clock_output id="LPO_clock.outFreq" value="1 kHz" locked="false" accuracy=""/>
+                  <clock_output id="MCGFFCLK.outFreq" value="750 kHz" locked="false" accuracy=""/>
+                  <clock_output id="System_clock.outFreq" value="96 MHz" locked="true" accuracy="0.001"/>
+               </clock_outputs>
+               <clock_settings>
+                  <setting id="MCGMode" value="PEE" locked="false"/>
+                  <setting id="MCG.FLL_mul.scale" value="2929" locked="false"/>
+                  <setting id="MCG.FRDIV.scale" value="32" locked="false"/>
+                  <setting id="MCG.IREFS.sel" value="MCG.FRDIV" locked="false"/>
+                  <setting id="MCG.PLLS.sel" value="MCG.PLL" locked="false"/>
+                  <setting id="MCG.PRDIV.scale" value="6" locked="false"/>
+                  <setting id="MCG_C2_OSC_MODE_CFG" value="ModeOscLowPower" locked="false"/>
+                  <setting id="MCG_C2_RANGE0_CFG" value="Very_high" locked="false"/>
+                  <setting id="MCG_C2_RANGE0_FRDIV_CFG" value="Very_high" locked="false"/>
+                  <setting id="RTC_CR_OSCE_CFG" value="Enabled" locked="false"/>
+                  <setting id="SIM.OUTDIV2.scale" value="2" locked="false"/>
+                  <setting id="SIM.OUTDIV3.scale" value="2" locked="false"/>
+                  <setting id="SIM.OUTDIV4.scale" value="4" locked="false"/>
+                  <setting id="SIM.RMIICLKSEL.sel" value="SIM.ENET_1588_CLK_EXT" locked="false"/>
+               </clock_settings>
+               <called_from_default_init>true</called_from_default_init>
+            </clock_configuration>
+         </clock_configurations>
+      </clocks>
+      <periphs name="Peripherals" version="5.0" enabled="true" update_project_code="true">
+         <generated_project_files>
+            <file path="board/peripherals.c" update_enabled="true"/>
+            <file path="board/peripherals.h" update_enabled="true"/>
+         </generated_project_files>
+         <peripherals_profile>
+            <processor_version>5.0.0</processor_version>
+         </peripherals_profile>
+         <functional_groups>
+            <functional_group name="BOARD_InitPeripherals" uuid="5d6b7c5c-a378-4b51-9618-c914d8b0a34b" called_from_default_init="true" id_prefix="" core="core0">
+               <description></description>
+               <options/>
+               <dependencies/>
+               <instances>
+                  <instance name="ADC16_1" type="adc16" type_id="adc16_7d827be2dc433dc756d94a7ce88cbcc5" mode="ADC" peripheral="ADC0" enabled="false">
+                     <config_set name="fsl_adc16" quick_selection="QS_ADC16_1">
+                        <struct name="adc16_config">
+                           <setting name="referenceVoltageSource" value="kADC16_ReferenceVoltageSourceVref"/>
+                           <setting name="clockSource" value="kADC16_ClockSourceAsynchronousClock"/>
+                           <setting name="enableAsynchronousClock" value="true"/>
+                           <setting name="clockDivider" value="kADC16_ClockDivider8"/>
+                           <setting name="resolution" value="kADC16_ResolutionSE12Bit"/>
+                           <setting name="longSampleMode" value="kADC16_LongSampleDisabled"/>
+                           <setting name="enableHighSpeed" value="false"/>
+                           <setting name="enableLowPower" value="false"/>
+                           <setting name="enableContinuousConversion" value="false"/>
+                        </struct>
+                        <setting name="adc16_channel_mux_mode" value="kADC16_ChannelMuxA"/>
+                        <struct name="adc16_hardware_compare_config">
+                           <setting name="hardwareCompareModeEnable" value="false"/>
+                        </struct>
+                        <setting name="doAutoCalibration" value="false"/>
+                        <setting name="offset" value="0"/>
+                        <setting name="trigger" value="false"/>
+                        <setting name="hardwareAverageConfiguration" value="kADC16_HardwareAverageDisabled"/>
+                        <struct name="adc16_pga_config">
+                           <setting name="adc16PgaEnable" value="false"/>
+                        </struct>
+                        <setting name="enable_dma" value="false"/>
+                        <setting name="enable_irq" value="false"/>
+                        <struct name="adc_interrupt">
+                           <setting name="IRQn" value="ADC0_IRQn"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <array name="adc16_channels_config"/>
+                     </config_set>
+                  </instance>
+                  <instance name="ADC16_2" type="adc16" type_id="adc16_7d827be2dc433dc756d94a7ce88cbcc5" mode="ADC" peripheral="ADC1" enabled="false">
+                     <config_set name="fsl_adc16" quick_selection="QS_ADC16_1">
+                        <struct name="adc16_config">
+                           <setting name="referenceVoltageSource" value="kADC16_ReferenceVoltageSourceVref"/>
+                           <setting name="clockSource" value="kADC16_ClockSourceAsynchronousClock"/>
+                           <setting name="enableAsynchronousClock" value="true"/>
+                           <setting name="clockDivider" value="kADC16_ClockDivider8"/>
+                           <setting name="resolution" value="kADC16_ResolutionSE12Bit"/>
+                           <setting name="longSampleMode" value="kADC16_LongSampleDisabled"/>
+                           <setting name="enableHighSpeed" value="false"/>
+                           <setting name="enableLowPower" value="false"/>
+                           <setting name="enableContinuousConversion" value="false"/>
+                        </struct>
+                        <setting name="adc16_channel_mux_mode" value="kADC16_ChannelMuxA"/>
+                        <struct name="adc16_hardware_compare_config">
+                           <setting name="hardwareCompareModeEnable" value="false"/>
+                        </struct>
+                        <setting name="doAutoCalibration" value="false"/>
+                        <setting name="offset" value="0"/>
+                        <setting name="trigger" value="false"/>
+                        <setting name="hardwareAverageConfiguration" value="kADC16_HardwareAverageDisabled"/>
+                        <struct name="adc16_pga_config">
+                           <setting name="adc16PgaEnable" value="false"/>
+                        </struct>
+                        <setting name="enable_dma" value="false"/>
+                        <setting name="enable_irq" value="false"/>
+                        <struct name="adc_interrupt">
+                           <setting name="IRQn" value="ADC1_IRQn"/>
+                           <setting name="enable_priority" value="false"/>
+                           <setting name="priority" value="0"/>
+                           <setting name="enable_custom_name" value="false"/>
+                        </struct>
+                        <array name="adc16_channels_config"/>
+                     </config_set>
+                  </instance>
+                  <instance name="PIT_1" type="pit" type_id="pit_a4782ba5223c8a2527ba91aeb2bc4159" mode="LPTMR_GENERAL" peripheral="PIT" enabled="false">
+                     <config_set name="fsl_pit" quick_selection="QS_PIT_1">
+                        <setting name="enableRunInDebug" value="false"/>
+                        <struct name="timingConfig">
+                           <setting name="clockSource" value="BusInterfaceClock"/>
+                           <setting name="clockSourceFreq" value="GetFreq"/>
+                        </struct>
+                        <array name="channels">
+                           <struct name="0">
+                              <setting name="channelNumber" value="0"/>
+                              <setting name="enableChain" value="false"/>
+                              <setting name="timerPeriod" value="1s"/>
+                              <setting name="startTimer" value="true"/>
+                              <setting name="enableInterrupt" value="true"/>
+                              <struct name="interrupt">
+                                 <setting name="IRQn" value="PIT0_IRQn"/>
+                                 <setting name="enable_priority" value="false"/>
+                                 <setting name="priority" value="0"/>
+                                 <setting name="enable_custom_name" value="false"/>
+                              </struct>
+                           </struct>
+                        </array>
+                     </config_set>
+                  </instance>
+                  <instance name="WDOG_1" type="wdog" type_id="wdog_362a0fbc7b41b2e6c7f96894cfc2f4d4" mode="general" peripheral="WDOG" enabled="false">
+                     <config_set name="fsl_wdog" quick_selection="default">
+                        <struct name="wdogConfig">
+                           <setting name="testMode" value="kWDOG_TestDisabled"/>
+                           <setting name="clockSource" value="kWDOG_LpoClockSource"/>
+                           <setting name="clockSourceFreq" value="BOARD_BootClockRUN"/>
+                           <setting name="prescaler" value="kWDOG_ClockPrescalerDivide1"/>
+                           <setting name="timeoutValue_str" value="65535"/>
+                           <setting name="enableWindowMode" value="false"/>
+                           <setting name="windowValue_str" value="0"/>
+                           <setting name="enableUpdate" value="true"/>
+                           <setting name="enableWdog" value="true"/>
+                           <struct name="workMode">
+                              <setting name="enableWait" value="true"/>
+                              <setting name="enableStop" value="false"/>
+                              <setting name="enableDebug" value="false"/>
+                           </struct>
+                        </struct>
+                        <struct name="interrupt_config">
+                           <set name="enableInterrupt">
+                              <selected/>
+                           </set>
+                           <struct name="interrupt_vectors">
+                              <setting name="enable_irq" value="false"/>
+                              <struct name="interrupt">
+                                 <setting name="IRQn" value="WDOG_EWM_IRQn"/>
+                                 <setting name="enable_priority" value="false"/>
+                                 <setting name="priority" value="0"/>
+                                 <setting name="enable_custom_name" value="false"/>
+                              </struct>
+                           </struct>
+                        </struct>
+                     </config_set>
+                  </instance>
+                  <instance name="debugPort" type="uart" type_id="uart_cd31a12aa8c79051fda42cc851a27c37" mode="interrupts" peripheral="UART3" enabled="false">
+                     <config_set name="uartConfig_t" quick_selection="QuickSelection1">
+                        <struct name="uartConfig">
+                           <setting name="clockSource" value="BusInterfaceClock"/>
+                           <setting name="clockSourceFreq" value="GetFreq"/>
+                           <setting name="baudRate_Bps" value="115200"/>
+                           <setting name="parityMode" value="kUART_ParityDisabled"/>
+                           <setting name="txFifoWatermark" value="0"/>
+                           <setting name="rxFifoWatermark" value="1"/>
+                           <setting name="idleType" value="kUART_IdleTypeStartBit"/>
+                           <setting name="enableTx" value="true"/>
+                           <setting name="enableRx" value="true"/>
+                        </struct>
+                     </config_set>
+                     <config_set name="interruptsCfg" quick_selection="QuickSelection1">
+                        <set name="interrupts">
+                           <selected>
+                              <id>kUART_TxDataRegEmptyInterruptEnable</id>
+                              <id>kUART_TransmissionCompleteInterruptEnable</id>
+                              <id>kUART_RxDataRegFullInterruptEnable</id>
+                              <id>kUART_RxOverrunInterruptEnable</id>
+                           </selected>
+                        </set>
+                        <struct name="interrupt_vectors">
+                           <setting name="enable_rx_tx_irq" value="true"/>
+                           <struct name="interrupt_rx_tx">
+                              <setting name="IRQn" value="UART3_RX_TX_IRQn"/>
+                              <setting name="enable_priority" value="false"/>
+                              <setting name="priority" value="0"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                           <setting name="enable_err_irq" value="false"/>
+                           <struct name="interrupt_err">
+                              <setting name="IRQn" value="UART3_ERR_IRQn"/>
+                              <setting name="enable_priority" value="false"/>
+                              <setting name="priority" value="0"/>
+                              <setting name="enable_custom_name" value="false"/>
+                           </struct>
+                        </struct>
+                     </config_set>
+                  </instance>
+               </instances>
+            </functional_group>
+         </functional_groups>
+         <components>
+            <component name="system" type_id="system_54b53072540eeeb8f8e9343e71f28176">
+               <config_set_global name="global_system_definitions"/>
+            </component>
+         </components>
+      </periphs>
+   </tools>
+</configuration>

@@ -39,7 +39,6 @@
 #include "queue.h"
 #include "timers.h"
 
-#include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
 #include "pin_mux.h"
@@ -58,21 +57,6 @@
 /*!
  * @brief Task responsible for printing of "Hello world." message.
  */
-static void HelloTask(void *pvParameters)
-{
-    size_t n=0;
-
-    while(1)
-    {
-    	printf("hello %d\r\n",n++);
-
-    	vTaskDelay(100);
-
-    }
-
-
-    vTaskSuspend(NULL);
-}
 
 /*
  * @brief   Application entry point.
@@ -87,7 +71,6 @@ int main(void) {
 
     PRINTF("Hello World\n");
 
-    xTaskCreate(HelloTask, "Hellotask", configMINIMAL_STACK_SIZE + 10, NULL, Hellotask_PRIORITY, NULL);
     xTaskCreate(DebugTask, DebugTaskName, DEBUG_TASK_STACK_SIZE , NULL, DEBUG_TASK_PRIORITY, NULL);
 
     vTaskStartScheduler();
