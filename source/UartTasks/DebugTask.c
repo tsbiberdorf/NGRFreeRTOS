@@ -145,13 +145,26 @@ void DebugTask(void *pvParameters)
             tl_DebugInRingEndIdx++;
             tl_DebugInRingEndIdx %= DEBUG_RING_BUFFER_SIZE;
         }
-        while ((kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) && (tl_DebugOutRingStartIdx != tl_DebugOutRingEndIdx))
+        while(tl_DebugOutRingStartIdx != tl_DebugOutRingEndIdx)
         {
-        	// output information to debug port
-            UART_WriteByte(DEBUG_UART, tl_DebugOutRingBuffer[tl_DebugOutRingEndIdx]);
-            tl_DebugOutRingEndIdx++;
-            tl_DebugOutRingEndIdx %= DEBUG_RING_BUFFER_SIZE;
+            if ((kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) && (tl_DebugOutRingStartIdx != tl_DebugOutRingEndIdx))
+            {
+            	// output information to debug port
+                UART_WriteByte(DEBUG_UART, tl_DebugOutRingBuffer[tl_DebugOutRingEndIdx]);
+                tl_DebugOutRingEndIdx++;
+                tl_DebugOutRingEndIdx %= DEBUG_RING_BUFFER_SIZE;
+            }
+
+    		vTaskDelay(1);
+
         }
+//        while ((kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) && (tl_DebugOutRingStartIdx != tl_DebugOutRingEndIdx))
+//        {
+//        	// output information to debug port
+//            UART_WriteByte(DEBUG_UART, tl_DebugOutRingBuffer[tl_DebugOutRingEndIdx]);
+//            tl_DebugOutRingEndIdx++;
+//            tl_DebugOutRingEndIdx %= DEBUG_RING_BUFFER_SIZE;
+//        }
 
 		vTaskDelay(10);
 	}
