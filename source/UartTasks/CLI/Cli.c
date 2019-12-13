@@ -16,6 +16,84 @@
 static uint8_t tl_cliData[CLI_BUFFER_SIZE];
 static uint16_t tl_cliIdx = 0;
 
+
+/*
+ * parse InputStr for decimal value.
+ * @return ptrEnd will be null if no more data to parse
+ */
+static uint8_t * ParseDecimal(uint8_t *InputStr, uint32_t *PtrDecimal)
+{
+	int16_t idx;
+	uint8_t *ptrStart;
+	uint8_t *ptrEnd = NULL;
+	uint32_t value;
+	ptrStart = InputStr;
+	idx = 0;
+
+	/*
+	 * first look for the first digit of the decimal number
+	 */
+	while(*(ptrStart+idx) == ' ')
+	{
+		idx++;
+		/*
+		 * @todo
+		 * may want to put a check here, to make sure the idx does not
+		 * get too big
+		 */
+	}
+	ptrStart = ptrStart+idx;
+	value = strtoul((char*)ptrStart,(char **)&ptrEnd,10);
+	*PtrDecimal = value;
+
+	if(ptrEnd == NULL)
+	{
+		/*
+		 * no more data to parse
+		 */
+	}
+	return ptrEnd;
+}
+
+
+/*
+ * parse InputStr for hex value.
+ * @return ptrEnd will be null if no more data to parse
+ */
+static uint8_t * ParseHex(uint8_t *InputStr, uint32_t *PtrHex)
+{
+	int16_t idx;
+	uint8_t *ptrStart;
+	uint8_t *ptrEnd = NULL;
+	uint32_t value;
+	ptrStart = InputStr;
+	idx = 0;
+
+	/*
+	 * first look for the first digit of the decimal number
+	 */
+	while(*(ptrStart+idx) == ' ')
+	{
+		idx++;
+		/*
+		 * @todo
+		 * may want to put a check here, to make sure the idx does not
+		 * get too big
+		 */
+	}
+	ptrStart = ptrStart+idx;
+	value = strtoul((char*)ptrStart,(char **)&ptrEnd,16);
+	*PtrHex = value;
+
+	if(ptrEnd == NULL)
+	{
+		/*
+		 * no more data to parse
+		 */
+	}
+	return ptrEnd;
+}
+
 typedef struct _cliCommandOptions_s
 {
 	const char *option;
@@ -82,24 +160,48 @@ static int32_t gpioPinConfiguration(char *Param)
 
 static int32_t gpioPinSelect(char *Param)
 {
-	printf("gpio pin select\r\n");
+	uint8_t *parseStatus;
+	uint32_t pinSelect;
+
+	parseStatus = ParseDecimal((uint8_t *)Param, &pinSelect);
+	printf("gpio pin select %d \r\n",pinSelect);
+	setInputPin(pinSelect);
 	return 0;
 }
+
 static int32_t gpioPullupPwrSelect(char *Param)
 {
-	printf("gpio pin pullup power select\r\n");
+	uint8_t *parseStatus;
+	uint32_t pullupPwrSelect;
+
+	parseStatus = ParseDecimal((uint8_t *)Param, &pullupPwrSelect);
+	printf("gpio pin pullup power select %d\r\n",pullupPwrSelect);
+	setPullupPowerLevel(pullupPwrSelect);
 	return 0;
 }
+
 static int32_t gpioPassiveFilterSelect(char *Param)
 {
-	printf("gpio pin passive filter select\r\n");
+	uint8_t *parseStatus;
+	uint32_t filterSelect;
+
+	parseStatus = ParseDecimal((uint8_t *)Param, &filterSelect);
+	printf("gpio pin passive filter select %f\r\n",filterSelect);
+	setPassiveFilter(filterSelect);
 	return 0;
 }
+
 static int32_t gpioActiveFilterSelect(char *Param)
 {
-	printf("gpio pin active filter select\r\n");
+	uint8_t *parseStatus;
+	uint32_t filterSelect;
+
+	parseStatus = ParseDecimal((uint8_t *)Param, &filterSelect);
+	printf("gpio pin active filter select %d\r\n",filterSelect);
+	setActiveFilter(filterSelect);
 	return 0;
 }
+
 s_cliCommandOptions_t gpioOptions[]= {
 		{"-pf",3,gpioPassiveFilterSelect},
 		{"-af",3,gpioActiveFilterSelect},
