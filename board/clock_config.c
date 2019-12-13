@@ -33,11 +33,11 @@
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Clocks v6.0
+product: Clocks v5.0
 processor: MK60DN512xxx10
 package_id: MK60DN512VLL10
 mcu_data: ksdk2_0
-processor_version: 6.0.0
+processor_version: 5.0.0
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
@@ -92,7 +92,7 @@ name: BOARD_BootClockRUN
 called_from_default_init: true
 outputs:
 - {id: Bus_clock.outFreq, value: 48 MHz, locked: true, accuracy: '0.001'}
-- {id: Core_clock.outFreq, value: 96 MHz, locked: true, accuracy: '0.001'}
+- {id: Core_clock.outFreq, value: 96 MHz}
 - {id: Flash_clock.outFreq, value: 24 MHz, locked: true, accuracy: '0.001'}
 - {id: FlexBus_clock.outFreq, value: 48 MHz, locked: true, accuracy: '0.001'}
 - {id: LPO_clock.outFreq, value: 1 kHz}

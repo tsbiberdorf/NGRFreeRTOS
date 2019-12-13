@@ -25,6 +25,8 @@ extern "C" {
  */
 void BOARD_InitBootPins(void);
 
+#define PORT_DFER_DFE_2_MASK 0x04u /*!<@brief Digital Filter Enable Mask for item 2. */
+
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
  *

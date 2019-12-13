@@ -24,7 +24,7 @@
 #define BOARD_DEBUG_UART_BAUDRATE 115200
 
 /*! @brief Ring buffer size (Unit: Byte). */
-#define DEBUG_RING_BUFFER_SIZE 16
+#define DEBUG_RING_BUFFER_SIZE 80
 
 /*! @brief Ring buffer to save received data. */
 
@@ -46,9 +46,13 @@ uint8_t g_tipString[] =
   Ring buffer full: (((rxIndex + 1) % DEMO_RING_BUFFER_SIZE) == txIndex)
   Ring buffer empty: (rxIndex == txIndex)
 */
-uint8_t tl_DebugRingBuffer[DEBUG_RING_BUFFER_SIZE];
-volatile uint16_t txIndex; /* Index of the data to send out. */
-volatile uint16_t rxIndex; /* Index of the memory to save new arrived data. */
+uint8_t tl_DebugInRingBuffer[DEBUG_RING_BUFFER_SIZE];
+volatile uint16_t tl_DebugInRingEndIdx; /* Index of the data to send out. */
+volatile uint16_t tl_DebugInRingStartIdx; /* Index of the memory to save new arrived data. */
+
+uint8_t tl_DebugOutRingBuffer[DEBUG_RING_BUFFER_SIZE];
+volatile uint16_t tl_DebugOutRingEndIdx; /* Index of the data to send out. */
+volatile uint16_t tl_DebugOutRingStartIdx; /* Index of the memory to save new arrived data. */
 
 /*******************************************************************************
  * Code
@@ -63,18 +67,46 @@ void DEBUG_UART_IRQHANDLER(void)
         data = UART_ReadByte(DEBUG_UART);
 
         /* If ring buffer is not full, add data to ring buffer. */
-        if (((rxIndex + 1) % DEBUG_RING_BUFFER_SIZE) != txIndex)
+        if (((tl_DebugInRingStartIdx + 1) % DEBUG_RING_BUFFER_SIZE) != tl_DebugInRingEndIdx)
         {
-            tl_DebugRingBuffer[rxIndex] = data;
-            rxIndex++;
-            rxIndex %= DEBUG_RING_BUFFER_SIZE;
+            tl_DebugInRingBuffer[tl_DebugInRingStartIdx] = data;
+            tl_DebugInRingStartIdx++;
+            tl_DebugInRingStartIdx %= DEBUG_RING_BUFFER_SIZE;
         }
     }
 }
 
+/**
+ * @brief output write data to debug uart port
+ *
+ * @param WriteData pointer to buffer to write
+ * @param Size number of bytes to send
+ * @return retCode
+ */
+uint32_t DebugTaskWrite(const uint8_t *WriteData,size_t Size)
+{
+	uint32_t retCode = 0;
+	uint16_t idx;
+	for(idx=0; idx < Size; idx++)
+	{
+        if (((tl_DebugOutRingStartIdx + 1) % DEBUG_RING_BUFFER_SIZE) != tl_DebugOutRingEndIdx)
+        {
+            tl_DebugOutRingBuffer[tl_DebugOutRingStartIdx] = WriteData[idx];
+            tl_DebugOutRingStartIdx++;
+            tl_DebugOutRingStartIdx %= DEBUG_RING_BUFFER_SIZE;
+        }
+        else
+        {
+        	retCode = idx;
+        	break;
+        }
+	}
+
+	return retCode;
+}
+
 void DebugTask(void *pvParameters)
 {
-	uint16_t cnt = 0;
     uart_config_t config;
     /*
      * config.baudRate_Bps = 115200U;
@@ -100,19 +132,27 @@ void DebugTask(void *pvParameters)
     NVIC_SetPriority(DEBUG_UART_IRQn, 1);
     EnableIRQ(DEBUG_UART_IRQn);
 
+	printf("CLI/Debug Task started\r\n");
 
 	while(1)
 	{
-		printf("debug Task %d\r\n",cnt++);
 
         /* Send data only when UART TX register is empty and ring buffer has data to send out. */
-        while ((kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) && (rxIndex != txIndex))
+        while (tl_DebugInRingStartIdx != tl_DebugInRingEndIdx)
         {
-            UART_WriteByte(DEBUG_UART, tl_DebugRingBuffer[txIndex]);
-            cli(tl_DebugRingBuffer[txIndex]);
-            txIndex++;
-            txIndex %= DEBUG_RING_BUFFER_SIZE;
+        	// determine if CLI input command is present
+            cli(tl_DebugInRingBuffer[tl_DebugInRingEndIdx]);
+            tl_DebugInRingEndIdx++;
+            tl_DebugInRingEndIdx %= DEBUG_RING_BUFFER_SIZE;
         }
-		vTaskDelay(100);
+        while ((kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) && (tl_DebugOutRingStartIdx != tl_DebugOutRingEndIdx))
+        {
+        	// output information to debug port
+            UART_WriteByte(DEBUG_UART, tl_DebugOutRingBuffer[tl_DebugOutRingEndIdx]);
+            tl_DebugOutRingEndIdx++;
+            tl_DebugOutRingEndIdx %= DEBUG_RING_BUFFER_SIZE;
+        }
+
+		vTaskDelay(10);
 	}
 }

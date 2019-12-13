@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "../DebugTask.h"
 
 #define CLI_BUFFER_SIZE (128)
 
@@ -27,9 +28,20 @@ typedef struct _cliCommands_s
 }s_cliCommands_t;
 
 
+static const char *helpCmdText[] = {
+		"NGR help commands:\r\n",
+		"gpio\r\n",
+		"\0"
+};
+
 int32_t helpCmd(char *Param)
 {
-	printf("NGR help commands:\r\n");
+	uint16_t helpIdx=0;
+	while(helpCmdText[helpIdx][0])
+	{
+		DebugTaskWrite(helpCmdText[helpIdx],strlen((const char *)helpCmdText[helpIdx]));
+		helpIdx++;
+	}
 	return 0;
 }
 
@@ -151,7 +163,7 @@ void cli(uint8_t InputKey)
 	if( tl_cliData[tl_cliIdx-1] == '\n')
 	{
 		tl_cliData[tl_cliIdx-1] = 0;
-		if( tl_cliData[tl_cliIdx-2] == '\n')
+		if( tl_cliData[tl_cliIdx-2] == '\r')
 		{
 			tl_cliData[tl_cliIdx-2] = 0;
 		}

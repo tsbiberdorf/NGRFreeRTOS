@@ -72,6 +72,7 @@ int main(void) {
     PRINTF("Hello World\n");
 
     xTaskCreate(DebugTask, DebugTaskName, DEBUG_TASK_STACK_SIZE , NULL, DEBUG_TASK_PRIORITY, NULL);
+    xTaskCreate(GpioTask, GpioTaskName, GPIO_TASK_STACK_SIZE , NULL, GPIO_TASK_PRIORITY, NULL);
 
     vTaskStartScheduler();
     for (;;)

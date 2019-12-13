@@ -6,11 +6,11 @@
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Peripherals v6.0
+product: Peripherals v5.0
 processor: MK60DN512xxx10
 package_id: MK60DN512VLL10
 mcu_data: ksdk2_0
-processor_version: 6.0.0
+processor_version: 5.0.0
 functionalGroups:
 - name: BOARD_InitPeripherals
   called_from_default_init: true
@@ -23,13 +23,6 @@ component:
 - type_id: 'system_54b53072540eeeb8f8e9343e71f28176'
 - global_system_definitions: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-component:
-- type: 'msg'
-- type_id: 'msg_6e2baaf3b97dbeef01c0043275f9a0e7'
-- global_messages: []
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
 /***********************************************************************************************************************
@@ -38,10 +31,46 @@ component:
 #include "peripherals.h"
 
 /***********************************************************************************************************************
+ * BOARD_InitPeripherals functional group
+ **********************************************************************************************************************/
+/***********************************************************************************************************************
+ * GPIO_1 initialization code
+ **********************************************************************************************************************/
+/* clang-format off */
+/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
+instance:
+- name: 'GPIO_1'
+- type: 'gpio'
+- mode: 'GPIO'
+- type_id: 'gpio_65d133e8884c2b67e1400b2f76d174b8'
+- functional_group: 'BOARD_InitPeripherals'
+- peripheral: 'GPIOC'
+- config_sets:
+  - fsl_gpio:
+    - enable_irq: 'true'
+    - port_interrupt:
+      - IRQn: 'PORTC_IRQn'
+      - enable_priority: 'true'
+      - priority: '1'
+      - enable_custom_name: 'false'
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
+/* clang-format on */
+
+void GPIO_1_init(void) {
+  /* Make sure, the clock gate for port C is enabled (e. g. in pin_mux.c) */
+  /* Interrupt vector PORTC_IRQn priority settings in the NVIC */
+  NVIC_SetPriority(PORTC_IRQn, GPIO_1_IRQ_PRIORITY);
+  /* Enable interrupt PORTC_IRQn request in the NVIC */
+  EnableIRQ(PORTC_IRQn);
+}
+
+/***********************************************************************************************************************
  * Initialization functions
  **********************************************************************************************************************/
 void BOARD_InitPeripherals(void)
 {
+  /* Initialize components */
+  GPIO_1_init();
 }
 
 /***********************************************************************************************************************

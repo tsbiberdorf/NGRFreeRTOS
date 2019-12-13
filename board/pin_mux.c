@@ -7,17 +7,21 @@
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Pins v6.0
+product: Pins v5.0
 processor: MK60DN512xxx10
 package_id: MK60DN512VLL10
 mcu_data: ksdk2_0
-processor_version: 6.0.0
+processor_version: 5.0.0
+pin_labels:
+- {pin_num: '71', pin_signal: ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, label: TestC1}
+- {pin_num: '72', pin_signal: ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, label: TestC2}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
 
 #include "fsl_common.h"
 #include "fsl_port.h"
+#include "fsl_gpio.h"
 #include "pin_mux.h"
 
 /* FUNCTION ************************************************************************************************************
@@ -48,6 +52,10 @@ BOARD_InitPins:
   - {pin_num: '54', peripheral: ENET, signal: MII_MDC, pin_signal: ADC0_SE9/ADC1_SE9/TSI0_CH6/PTB1/I2C0_SDA/FTM1_CH1/RMII0_MDC/MII0_MDC/FTM1_QD_PHB}
   - {pin_num: '58', peripheral: UART3, signal: RX, pin_signal: ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1}
   - {pin_num: '59', peripheral: UART3, signal: TX, pin_signal: ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2}
+  - {pin_num: '71', peripheral: GPIOC, signal: 'GPIO, 1', pin_signal: ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, direction: INPUT,
+    gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: disable, drive_strength: high}
+  - {pin_num: '72', peripheral: GPIOC, signal: 'GPIO, 2', pin_signal: ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, direction: INPUT,
+    gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: enable, digital_filter: enable, drive_strength: high}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -64,8 +72,24 @@ void BOARD_InitPins(void)
     CLOCK_EnableClock(kCLOCK_PortA);
     /* Port B Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortB);
+    /* Port C Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortC);
     /* Port E Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortE);
+
+    gpio_pin_config_t gpioc_pin71_config = {
+        .pinDirection = kGPIO_DigitalInput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTC1 (pin 71)  */
+    GPIO_PinInit(GPIOC, 1U, &gpioc_pin71_config);
+
+    gpio_pin_config_t gpioc_pin72_config = {
+        .pinDirection = kGPIO_DigitalInput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTC2 (pin 72)  */
+    GPIO_PinInit(GPIOC, 2U, &gpioc_pin72_config);
 
     /* PORTA12 (pin 42) is configured as MII0_RXD1 */
     PORT_SetPinMux(PORTA, 12U, kPORT_MuxAlt4);
@@ -96,6 +120,61 @@ void BOARD_InitPins(void)
 
     /* PORTB11 (pin 59) is configured as UART3_TX */
     PORT_SetPinMux(PORTB, 11U, kPORT_MuxAlt3);
+    /* Configure digital filter */
+    PORT_EnablePinsDigitalFilter(
+        /* Digital filter is configured on port C */
+        PORTC,
+        /* Digital filter is configured for PORTC0 */
+        PORT_DFER_DFE_2_MASK,
+        /* Enable digital filter */
+        true);
+
+    /* PORTC1 (pin 71) is configured as PTC1 */
+    PORT_SetPinMux(PORTC, 1U, kPORT_MuxAsGpio);
+
+    /* Interrupt configuration on PORTC1 (pin 71): Interrupt on falling edge */
+    PORT_SetPinInterruptConfig(PORTC, 1U, kPORT_InterruptFallingEdge);
+
+    PORTC->PCR[1] =
+        ((PORTC->PCR[1] &
+          /* Mask bits to zero which are setting */
+          (~(PORT_PCR_PS_MASK | PORT_PCR_PE_MASK | PORT_PCR_PFE_MASK | PORT_PCR_DSE_MASK | PORT_PCR_ISF_MASK)))
+
+         /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding Port
+          * Pull Enable Register field is set. */
+         | (uint32_t)(kPORT_PullUp)
+
+         /* Passive Filter Enable: Passive input filter is disabled on the corresponding pin. */
+         | PORT_PCR_PFE(kPORT_PassiveFilterDisable)
+
+         /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin is
+          * configured as a digital output. */
+         | PORT_PCR_DSE(kPORT_HighDriveStrength));
+
+    /* PORTC2 (pin 72) is configured as PTC2 */
+    PORT_SetPinMux(PORTC, 2U, kPORT_MuxAsGpio);
+
+    /* Interrupt configuration on PORTC2 (pin 72): Interrupt on falling edge */
+    PORT_SetPinInterruptConfig(PORTC, 2U, kPORT_InterruptFallingEdge);
+
+    PORTC->PCR[2] =
+        ((PORTC->PCR[2] &
+          /* Mask bits to zero which are setting */
+          (~(PORT_PCR_PS_MASK | PORT_PCR_PE_MASK | PORT_PCR_PFE_MASK | PORT_PCR_DSE_MASK | PORT_PCR_ISF_MASK)))
+
+         /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding Port
+          * Pull Enable Register field is set. */
+         | (uint32_t)(kPORT_PullUp)
+
+         /* Passive Filter Enable: Passive input filter is enabled on the corresponding pin, if the pin is
+          * configured as a digital input.
+          * A low pass filter (10 MHz to 30 MHz bandwidth) is enabled on the digital input path.
+          * Disable the passive input filter when supporting high speed interfaces (> 2 MHz) on the pin. */
+         | PORT_PCR_PFE(kPORT_PassiveFilterEnable)
+
+         /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin is
+          * configured as a digital output. */
+         | PORT_PCR_DSE(kPORT_HighDriveStrength));
 
     /* PORTE26 (pin 33) is configured as ENET_1588_CLKIN */
     PORT_SetPinMux(PORTE, 26U, kPORT_MuxAlt2);
