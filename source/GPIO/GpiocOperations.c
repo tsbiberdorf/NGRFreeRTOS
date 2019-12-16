@@ -32,9 +32,9 @@
 #define BOARD_SW_IRQ BOARD_SW1_IRQ
 #define BOARD_SW_NAME BOARD_SW1_NAME
 
+static volatile uint16_t ts_Pin1TestCount = 0;
 static uint32_t tl_ButtonPressed = false;
 static uint32_t tl_ChangeConfigurationFlag = 0;
-volatile static uint32_t ts_Pin1TestCount = 0;
 
 typedef enum _PinSelection_e
 {
@@ -189,6 +189,10 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 	const char *pinConfigStr12 ="off\r\n";
 	const char *pinConfigStr13 ="test Count: ";
 
+	GPIO_TogglePinsOutput(GPIOC,(1<<15|1<<14));
+	GPIO_SetPinsOutput(GPIOC,(1<<13));
+
+	uint16_t pin1TestCount;
 	size_t sentSize = 0;
 	size_t length;
 	char *ptrDetails = CurrentConfigurationPtr;
@@ -283,7 +287,8 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 	ptrDetails += length;
 	sentSize += length;
 
-	length = sprintf(ptrDetails,"%d\r\n",ts_Pin1TestCount);
+	pin1TestCount = ts_Pin1TestCount;
+	length = sprintf(ptrDetails,"%d\r\n",pin1TestCount);
 	ptrDetails += length;
 	sentSize += length;
 
@@ -302,6 +307,7 @@ void gpioClearTestCount()
 void GpioTask(void *pvParameters)
 {
 	SEGGER_RTT_printf(0,"Gpio Task started\r\n");
+
 
 	while(1)
 	{

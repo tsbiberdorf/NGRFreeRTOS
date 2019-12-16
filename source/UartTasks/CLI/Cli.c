@@ -367,10 +367,10 @@ void cli(uint8_t InputKey)
 {
 	tl_cliData[tl_cliIdx++] = InputKey;
 
-	if( tl_cliData[tl_cliIdx-1] == '\n')
+	if( (tl_cliData[tl_cliIdx-1] == '\n') || (tl_cliData[tl_cliIdx-1] == '\r'))
 	{
 		tl_cliData[tl_cliIdx-1] = 0;
-		if( tl_cliData[tl_cliIdx-2] == '\r')
+		if( (tl_cliData[tl_cliIdx-2] == '\r') || (tl_cliData[tl_cliIdx-2] == '\n') )
 		{
 			tl_cliData[tl_cliIdx-2] = 0;
 		}

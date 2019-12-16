@@ -56,6 +56,9 @@ BOARD_InitPins:
     gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: enable, drive_strength: high}
   - {pin_num: '72', peripheral: GPIOC, signal: 'GPIO, 2', pin_signal: ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, direction: INPUT,
     gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: disable, digital_filter: enable, drive_strength: high}
+  - {pin_num: '85', peripheral: GPIOC, signal: 'GPIO, 13', pin_signal: PTC13/UART4_CTS_b/FB_AD26, direction: OUTPUT, drive_strength: high}
+  - {pin_num: '86', peripheral: GPIOC, signal: 'GPIO, 14', pin_signal: PTC14/UART4_RX/FB_AD25, direction: OUTPUT}
+  - {pin_num: '87', peripheral: GPIOC, signal: 'GPIO, 15', pin_signal: PTC15/UART4_TX/FB_AD24, direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -90,6 +93,27 @@ void BOARD_InitPins(void)
     };
     /* Initialize GPIO functionality on pin PTC2 (pin 72)  */
     GPIO_PinInit(GPIOC, 2U, &gpioc_pin72_config);
+
+    gpio_pin_config_t gpioc_pin85_config = {
+        .pinDirection = kGPIO_DigitalOutput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTC13 (pin 85)  */
+    GPIO_PinInit(GPIOC, 13U, &gpioc_pin85_config);
+
+    gpio_pin_config_t gpioc_pin86_config = {
+        .pinDirection = kGPIO_DigitalOutput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTC14 (pin 86)  */
+    GPIO_PinInit(GPIOC, 14U, &gpioc_pin86_config);
+
+    gpio_pin_config_t gpioc_pin87_config = {
+        .pinDirection = kGPIO_DigitalOutput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTC15 (pin 87)  */
+    GPIO_PinInit(GPIOC, 15U, &gpioc_pin87_config);
 
     /* PORTA12 (pin 42) is configured as MII0_RXD1 */
     PORT_SetPinMux(PORTA, 12U, kPORT_MuxAlt4);
@@ -153,6 +177,23 @@ void BOARD_InitPins(void)
          /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin is
           * configured as a digital output. */
          | PORT_PCR_DSE(kPORT_HighDriveStrength));
+
+    /* PORTC13 (pin 85) is configured as PTC13 */
+    PORT_SetPinMux(PORTC, 13U, kPORT_MuxAsGpio);
+
+    PORTC->PCR[13] = ((PORTC->PCR[13] &
+                       /* Mask bits to zero which are setting */
+                       (~(PORT_PCR_DSE_MASK | PORT_PCR_ISF_MASK)))
+
+                      /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if
+                       * pin is configured as a digital output. */
+                      | PORT_PCR_DSE(kPORT_HighDriveStrength));
+
+    /* PORTC14 (pin 86) is configured as PTC14 */
+    PORT_SetPinMux(PORTC, 14U, kPORT_MuxAsGpio);
+
+    /* PORTC15 (pin 87) is configured as PTC15 */
+    PORT_SetPinMux(PORTC, 15U, kPORT_MuxAsGpio);
 
     /* PORTC2 (pin 72) is configured as PTC2 */
     PORT_SetPinMux(PORTC, 2U, kPORT_MuxAsGpio);
