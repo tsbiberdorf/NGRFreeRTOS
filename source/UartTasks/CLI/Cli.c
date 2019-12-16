@@ -10,8 +10,10 @@
 #include <string.h>
 #include "../DebugTask.h"
 #include "GPIO/GpiocOperations.h"
+#include "NGRRelay.h"
+#include "CMSIS/RTT/SEGGER_RTT.h"
 
-#define CLI_BUFFER_SIZE (128)
+#define CLI_BUFFER_SIZE (256)
 
 static uint8_t tl_cliData[CLI_BUFFER_SIZE];
 static uint16_t tl_cliIdx = 0;
@@ -117,6 +119,11 @@ static const char *helpCmdText[] = {
 int32_t helpCmd(char *Param)
 {
 	uint16_t helpIdx=0;
+	char *version[64];
+
+	sprintf(version,"\r\nVersion %d.%d.%d.%d\r\n",MAJOR_VERSION,MINOR_VERSION,VERSION_VERSION,REVISION_VERSION);
+	DebugTaskWrite(version,strlen(version));
+
 	while(helpCmdText[helpIdx][0])
 	{
 		DebugTaskWrite(helpCmdText[helpIdx],strlen((const char *)helpCmdText[helpIdx]));
@@ -133,12 +140,17 @@ const char *gpioCmdText[] = {
 		"gpio help commands:\r\n",
 		"-p pin select\r\n",
 		"-c current configuration\r\n",
+		"-pp pullup power level {0|1}\r\n",
+		"-pf passive filter on/off {0|1}\r\n",
+		"-af active filter on/off {0|1}\r\n",
+		"-clr clear interrupt count\r\n",
 		"\0"
 };
 
 static int32_t gpioHelpCmd(char *Param)
 {
 	uint16_t helpIdx=0;
+
 	while(gpioCmdText[helpIdx][0])
 	{
 		DebugTaskWrite(gpioCmdText[helpIdx],strlen(gpioCmdText[helpIdx]));
@@ -150,7 +162,7 @@ static int32_t gpioHelpCmd(char *Param)
 static int32_t gpioPinConfiguration(char *Param)
 {
 	size_t strSize = CLI_BUFFER_SIZE;
-	printf("gpio pin configuration \r\n");
+//	printf("gpio pin configuration \r\n");
 	getInputPinConfiguration((char *)tl_cliData,&strSize);
 
 	DebugTaskWrite((char *)tl_cliData,strSize);
@@ -164,7 +176,7 @@ static int32_t gpioPinSelect(char *Param)
 	uint32_t pinSelect;
 
 	parseStatus = ParseDecimal((uint8_t *)Param, &pinSelect);
-	printf("gpio pin select %d \r\n",pinSelect);
+	SEGGER_RTT_printf(0,"gpio pin select %d \r\n",pinSelect);
 	setInputPin(pinSelect);
 	return 0;
 }
@@ -175,7 +187,7 @@ static int32_t gpioPullupPwrSelect(char *Param)
 	uint32_t pullupPwrSelect;
 
 	parseStatus = ParseDecimal((uint8_t *)Param, &pullupPwrSelect);
-	printf("gpio pin pullup power select %d\r\n",pullupPwrSelect);
+	SEGGER_RTT_printf(0,"gpio pin pullup power select %d\r\n",pullupPwrSelect);
 	setPullupPowerLevel(pullupPwrSelect);
 	return 0;
 }
@@ -186,7 +198,7 @@ static int32_t gpioPassiveFilterSelect(char *Param)
 	uint32_t filterSelect;
 
 	parseStatus = ParseDecimal((uint8_t *)Param, &filterSelect);
-	printf("gpio pin passive filter select %f\r\n",filterSelect);
+	SEGGER_RTT_printf(0,"gpio pin passive filter select %f\r\n",filterSelect);
 	setPassiveFilter(filterSelect);
 	return 0;
 }
@@ -197,8 +209,13 @@ static int32_t gpioActiveFilterSelect(char *Param)
 	uint32_t filterSelect;
 
 	parseStatus = ParseDecimal((uint8_t *)Param, &filterSelect);
-	printf("gpio pin active filter select %d\r\n",filterSelect);
+	SEGGER_RTT_printf(0,"gpio pin active filter select %d\r\n",filterSelect);
 	setActiveFilter(filterSelect);
+	return 0;
+}
+static int32_t gpioClearTestCnt(char *Param)
+{
+	gpioClearTestCount();
 	return 0;
 }
 
@@ -206,6 +223,7 @@ s_cliCommandOptions_t gpioOptions[]= {
 		{"-pf",3,gpioPassiveFilterSelect},
 		{"-af",3,gpioActiveFilterSelect},
 		{"-pp",3,gpioPullupPwrSelect},
+		{"-clr",4,gpioClearTestCnt},
 		{"-c",2,gpioPinConfiguration},
 		{"-p",2,gpioPinSelect},
 
@@ -236,7 +254,7 @@ int32_t LoopOptions(s_cliCommands_t *UserCmdOptions,uint8_t *PtrOption)
 		userOptionSize++;
 		if(idx == MAX_OPTION_SIZE)
 		{
-			printf("unknown command\r\n");
+			SEGGER_RTT_printf(0,"unknown command\r\n");
 			status = -1;
 			goto exitMethod;
 		}
@@ -314,7 +332,7 @@ int32_t LoopCmds(uint8_t *EnteredCmd)
 
 	if(status < 0)
 	{
-		printf("unknown command\r\n");
+		SEGGER_RTT_printf(0,"unknown command\r\n");
 	}
 
 	return status;

@@ -53,9 +53,9 @@ BOARD_InitPins:
   - {pin_num: '58', peripheral: UART3, signal: RX, pin_signal: ADC1_SE14/PTB10/SPI1_PCS0/UART3_RX/FB_AD19/FTM0_FLT1}
   - {pin_num: '59', peripheral: UART3, signal: TX, pin_signal: ADC1_SE15/PTB11/SPI1_SCK/UART3_TX/FB_AD18/FTM0_FLT2}
   - {pin_num: '71', peripheral: GPIOC, signal: 'GPIO, 1', pin_signal: ADC0_SE15/TSI0_CH14/PTC1/LLWU_P6/SPI0_PCS3/UART1_RTS_b/FTM0_CH0/FB_AD13/I2S0_TXD0, direction: INPUT,
-    gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: disable, drive_strength: high}
+    gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: enable, drive_strength: high}
   - {pin_num: '72', peripheral: GPIOC, signal: 'GPIO, 2', pin_signal: ADC0_SE4b/CMP1_IN0/TSI0_CH15/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1/FB_AD12/I2S0_TX_FS, direction: INPUT,
-    gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: enable, digital_filter: enable, drive_strength: high}
+    gpio_interrupt: kPORT_InterruptFallingEdge, pull_select: up, pull_enable: enable, passive_filter: disable, digital_filter: enable, drive_strength: high}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -144,8 +144,11 @@ void BOARD_InitPins(void)
           * Pull Enable Register field is set. */
          | (uint32_t)(kPORT_PullUp)
 
-         /* Passive Filter Enable: Passive input filter is disabled on the corresponding pin. */
-         | PORT_PCR_PFE(kPORT_PassiveFilterDisable)
+         /* Passive Filter Enable: Passive input filter is enabled on the corresponding pin, if the pin is
+          * configured as a digital input.
+          * A low pass filter (10 MHz to 30 MHz bandwidth) is enabled on the digital input path.
+          * Disable the passive input filter when supporting high speed interfaces (> 2 MHz) on the pin. */
+         | PORT_PCR_PFE(kPORT_PassiveFilterEnable)
 
          /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin is
           * configured as a digital output. */
@@ -166,11 +169,8 @@ void BOARD_InitPins(void)
           * Pull Enable Register field is set. */
          | (uint32_t)(kPORT_PullUp)
 
-         /* Passive Filter Enable: Passive input filter is enabled on the corresponding pin, if the pin is
-          * configured as a digital input.
-          * A low pass filter (10 MHz to 30 MHz bandwidth) is enabled on the digital input path.
-          * Disable the passive input filter when supporting high speed interfaces (> 2 MHz) on the pin. */
-         | PORT_PCR_PFE(kPORT_PassiveFilterEnable)
+         /* Passive Filter Enable: Passive input filter is disabled on the corresponding pin. */
+         | PORT_PCR_PFE(kPORT_PassiveFilterDisable)
 
          /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin is
           * configured as a digital output. */

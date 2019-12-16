@@ -85,7 +85,7 @@
                         <pin_feature name="gpio_interrupt" value="kPORT_InterruptFallingEdge"/>
                         <pin_feature name="pull_select" value="up"/>
                         <pin_feature name="pull_enable" value="enable"/>
-                        <pin_feature name="passive_filter" value="disable"/>
+                        <pin_feature name="passive_filter" value="enable"/>
                         <pin_feature name="drive_strength" value="high"/>
                      </pin_features>
                   </pin>
@@ -95,7 +95,7 @@
                         <pin_feature name="gpio_interrupt" value="kPORT_InterruptFallingEdge"/>
                         <pin_feature name="pull_select" value="up"/>
                         <pin_feature name="pull_enable" value="enable"/>
-                        <pin_feature name="passive_filter" value="enable"/>
+                        <pin_feature name="passive_filter" value="disable"/>
                         <pin_feature name="digital_filter" value="enable"/>
                         <pin_feature name="drive_strength" value="high"/>
                      </pin_features>

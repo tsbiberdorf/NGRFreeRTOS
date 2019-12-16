@@ -11,6 +11,7 @@
 #include "MK60D10.h"
 #include "fsl_uart.h"
 #include "CLI/Cli.h"
+#include "NGRRelay.h"
 
 /*******************************************************************************
  * Definitions
@@ -24,7 +25,7 @@
 #define BOARD_DEBUG_UART_BAUDRATE 115200
 
 /*! @brief Ring buffer size (Unit: Byte). */
-#define DEBUG_RING_BUFFER_SIZE 80
+#define DEBUG_RING_BUFFER_SIZE (256)
 
 /*! @brief Ring buffer to save received data. */
 
@@ -35,9 +36,6 @@
 /*******************************************************************************
  * Variables
  ******************************************************************************/
-
-uint8_t g_tipString[] =
-    "Uart functional API interrupt example\r\nBoard receives characters then sends them out\r\nNow please input:\r\n";
 
 /*
   Ring buffer for data input and output, in this example, input data are saved
@@ -121,11 +119,13 @@ void DebugTask(void *pvParameters)
     config.baudRate_Bps = BOARD_DEBUG_UART_BAUDRATE;
     config.enableTx = true;
     config.enableRx = true;
+    char startUpMessage[64];
 
     UART_Init(DEBUG_UART, &config, DEBUG_UART_CLK_FREQ);
+    sprintf(startUpMessage,"\r\nNGR Relay Board version %d.%d.%d.%d\r\n",MAJOR_VERSION,MINOR_VERSION,VERSION_VERSION,REVISION_VERSION);
 
     /* Send g_tipString out. */
-    UART_WriteBlocking(DEBUG_UART, g_tipString, sizeof(g_tipString) / sizeof(g_tipString[0]));
+    UART_WriteBlocking(DEBUG_UART, startUpMessage, sizeof(startUpMessage) / sizeof(startUpMessage[0]));
 
     /* Enable RX interrupt. */
     UART_EnableInterrupts(DEBUG_UART, kUART_RxDataRegFullInterruptEnable | kUART_RxOverrunInterruptEnable);

@@ -18,6 +18,7 @@
 #include "board.h"
 #include "pin_mux.h"
 #include "clock_config.h"
+#include "CMSIS/RTT/SEGGER_RTT.h"
 
 /*******************************************************************************
  * Definitions
@@ -33,6 +34,7 @@
 
 static uint32_t tl_ButtonPressed = false;
 static uint32_t tl_ChangeConfigurationFlag = 0;
+volatile static uint32_t ts_Pin1TestCount = 0;
 
 typedef enum _PinSelection_e
 {
@@ -90,6 +92,7 @@ void PORTC_IRQHandler(void)
 	{
     /* Clear external interrupt flag. */
 		GPIO_ClearPinsInterruptFlags(BOARD_TestC1_GPIO, 1U << BOARD_TestC1_PIN);
+		ts_Pin1TestCount++;
 	}
     /* Change state of button. */
     tl_ButtonPressed = true;
@@ -156,7 +159,7 @@ uint32_t setActiveFilter(uint32_t ActiveFilter)
 	if(ActiveFilter)
 	{
 		tl_CurrentInputPin.ActiveFilter = eActiveFilterOn;
-		ActiveFilter = 1;
+		activeFilter = 1;
 	}
 	else
 	{
@@ -164,7 +167,7 @@ uint32_t setActiveFilter(uint32_t ActiveFilter)
 	}
 
 	tl_ChangeConfigurationFlag = 1;
-	return ActiveFilter;
+	return activeFilter;
 }
 
 /**
@@ -184,6 +187,7 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 	const char *pinConfigStr10 ="Active Filter: ";
 	const char *pinConfigStr11 ="on\r\n";
 	const char *pinConfigStr12 ="off\r\n";
+	const char *pinConfigStr13 ="test Count: ";
 
 	size_t sentSize = 0;
 	size_t length;
@@ -273,19 +277,59 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 		break;
 	}
 
+	// display test count settings
+	length = strlen(pinConfigStr13);
+	memcpy(ptrDetails,pinConfigStr13,length);
+	ptrDetails += length;
+	sentSize += length;
+
+	length = sprintf(ptrDetails,"%d\r\n",ts_Pin1TestCount);
+	ptrDetails += length;
+	sentSize += length;
+
 	*Size = sentSize;
+}
+
+/**
+ * @brief clear the interrupt test count
+ */
+void gpioClearTestCount()
+{
+	SEGGER_RTT_printf(0,"clear ts_Pin1TestCount");
+	ts_Pin1TestCount = 0;
 }
 
 void GpioTask(void *pvParameters)
 {
-	printf("Gpio Task started\r\n");
+	SEGGER_RTT_printf(0,"Gpio Task started\r\n");
 
 	while(1)
 	{
 		if(tl_ChangeConfigurationFlag)
 		{
 			tl_ChangeConfigurationFlag = 0;
-			printf("change gpio input configuration\r\n");
+			switch(tl_CurrentInputPin.PinSelection)
+			{
+			case ePinSelectedOne:
+			    PORTC->PCR[1] &= ~(PORT_PCR_PFE(kPORT_PassiveFilterEnable)|PORT_PCR_DSE(kPORT_HighDriveStrength));
+			    if(tl_CurrentInputPin.PassiveFilter)
+			    {
+			         /* Passive Filter Enable: Passive input filter is disabled on the corresponding pin. */
+			    	PORTC->PCR[1] |= PORT_PCR_PFE(kPORT_PassiveFilterEnable);
+					SEGGER_RTT_printf(0,"passive On\r\n");
+			    }
+			    if(tl_CurrentInputPin.PullUpPower)
+			    {
+			         /* Drive Strength Enable: High drive strength is configured on the corresponding pin, if pin is
+			          * configured as a digital output. */
+			    	PORTC->PCR[1] |= PORT_PCR_DSE(kPORT_HighDriveStrength);
+					SEGGER_RTT_printf(0,"power high\r\n");
+			    }
+				break;
+			case ePinSelectedNone:
+				break;
+
+			}
 		}
 		vTaskDelay(1000);
 	}

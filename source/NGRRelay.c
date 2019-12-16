@@ -47,7 +47,8 @@
 #include "fsl_debug_console.h"
 #include "TaskParameters.h"
 #include "UartTasks/UartTasks.h"
-
+#include "CMSIS/RTT/SEGGER_RTT_Conf.h"
+#include "CMSIS/RTT/SEGGER_RTT.h"
 
 /* TODO: insert other include files here. */
 
@@ -69,7 +70,7 @@ int main(void) {
   	/* Init FSL debug console. */
 	BOARD_InitDebugConsole();
 
-    PRINTF("Hello World\n");
+    SEGGER_RTT_printf(0,"Hello World\r\n");
 
     xTaskCreate(DebugTask, DebugTaskName, DEBUG_TASK_STACK_SIZE , NULL, DEBUG_TASK_PRIORITY, NULL);
     xTaskCreate(GpioTask, GpioTaskName, GPIO_TASK_STACK_SIZE , NULL, GPIO_TASK_PRIORITY, NULL);
