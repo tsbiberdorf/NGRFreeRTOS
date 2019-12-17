@@ -47,12 +47,11 @@
 #include "fsl_debug_console.h"
 #include "TaskParameters.h"
 #include "UartTasks/UartTasks.h"
+#include "LED/LEDOperations.h"
 #include "CMSIS/RTT/SEGGER_RTT_Conf.h"
 #include "CMSIS/RTT/SEGGER_RTT.h"
 
 /* TODO: insert other include files here. */
-
-#define Hellotask_PRIORITY (configMAX_PRIORITIES - 1)
 
 /* TODO: insert other definitions and declarations here. */
 /*!
@@ -72,8 +71,12 @@ int main(void) {
 
     SEGGER_RTT_printf(0,"Hello World\r\n");
 
-    xTaskCreate(DebugTask, DebugTaskName, DEBUG_TASK_STACK_SIZE , NULL, DEBUG_TASK_PRIORITY, NULL);
-    xTaskCreate(GpioTask, GpioTaskName, GPIO_TASK_STACK_SIZE , NULL, GPIO_TASK_PRIORITY, NULL);
+//    xTaskCreate(DebugTask, DebugTaskName, DEBUG_TASK_STACK_SIZE , NULL, DEBUG_TASK_PRIORITY, NULL);
+    StartDebugTask();
+//    xTaskCreate(GpioTask, GpioTaskName, GPIO_TASK_STACK_SIZE , NULL, GPIO_TASK_PRIORITY, NULL);
+    StartGpioTask();
+
+    StartLedTask();
 
     vTaskStartScheduler();
     for (;;)

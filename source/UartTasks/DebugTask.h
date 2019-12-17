@@ -9,6 +9,7 @@
 #define UARTTASKS_DEBUGTASK_H_
 
 uint32_t DebugTaskWrite( const char *WriteData, size_t Size);
+TaskHandle_t GetDebugdTaskHandle();
 
 
 #endif /* UARTTASKS_DEBUGTASK_H_ */

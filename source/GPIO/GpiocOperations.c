@@ -10,6 +10,7 @@
 #include "task.h"
 #include "MK60D10.h"
 #include "fsl_uart.h"
+#include "TaskParameters.h"
 
 #include "fsl_debug_console.h"
 #include "fsl_port.h"
@@ -19,6 +20,9 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "CMSIS/RTT/SEGGER_RTT.h"
+#include "LED/LEDOperations.h"
+#include "UartTasks/DebugTask.h"
+
 
 /*******************************************************************************
  * Definitions
@@ -35,6 +39,9 @@
 static volatile uint16_t ts_Pin1TestCount = 0;
 static uint32_t tl_ButtonPressed = false;
 static uint32_t tl_ChangeConfigurationFlag = 0;
+const char *GpioTaskName = "GpioTask";
+
+volatile uint32_t ts_IrqCount = 0;
 
 typedef enum _PinSelection_e
 {
@@ -90,6 +97,7 @@ void PORTC_IRQHandler(void)
 
 	if( irqPinState & (1U << BOARD_TestC1_PIN))
 	{
+//		ts_IrqCount++;
     /* Clear external interrupt flag. */
 		GPIO_ClearPinsInterruptFlags(BOARD_TestC1_GPIO, 1U << BOARD_TestC1_PIN);
 		ts_Pin1TestCount++;
@@ -189,8 +197,8 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 	const char *pinConfigStr12 ="off\r\n";
 	const char *pinConfigStr13 ="test Count: ";
 
-	GPIO_TogglePinsOutput(GPIOC,(1<<15|1<<14));
-	GPIO_SetPinsOutput(GPIOC,(1<<13));
+	GPIO_TogglePinsOutput(GPIOC,LED2);
+	GPIO_SetPinsOutput(GPIOC,LED1);
 
 	uint16_t pin1TestCount;
 	size_t sentSize = 0;
@@ -304,9 +312,10 @@ void gpioClearTestCount()
 	ts_Pin1TestCount = 0;
 }
 
-void GpioTask(void *pvParameters)
+static void GpioTask(void *pvParameters)
 {
 	SEGGER_RTT_printf(0,"Gpio Task started\r\n");
+	uint16_t currentPin1TestCount = 0;
 
 
 	while(1)
@@ -337,6 +346,22 @@ void GpioTask(void *pvParameters)
 
 			}
 		}
+
+		if( currentPin1TestCount != ts_Pin1TestCount)
+		{
+			currentPin1TestCount = ts_Pin1TestCount;
+			xTaskNotify(GetLedTaskHandle(),0x1,eSetBits);
+			xTaskNotify(GetDebugdTaskHandle(),(uint32_t)ts_Pin1TestCount,eSetBits);
+		}
 		vTaskDelay(1000);
 	}
 }
+
+
+void StartGpioTask()
+{
+	xTaskCreate(GpioTask, GpioTaskName, GPIO_TASK_STACK_SIZE , NULL, GPIO_TASK_PRIORITY, NULL);
+
+}
+
+

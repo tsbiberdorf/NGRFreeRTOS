@@ -8,6 +8,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
+#include "FreeRTOS.h"
+#include "task.h"
 #include "../DebugTask.h"
 #include "GPIO/GpiocOperations.h"
 #include "NGRRelay.h"
