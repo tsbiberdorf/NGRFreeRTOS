@@ -132,9 +132,9 @@ void DebugTask(void *pvParameters)
 	{
 		uint32_t notifyBits;
 		char notityBytes[4];
-	} notifyData;
+	} notifyData,storedData;
 	uint16_t irqCountDelay = 0;
-	uint16_t irqCountDelayPeriod = 1000;
+	uint16_t irqCountDelayPeriod = 100;
 
 	BaseType_t xResult;
 
@@ -150,7 +150,7 @@ void DebugTask(void *pvParameters)
 	EnableIRQ(DEBUG_UART_IRQn);
 
 	printf("CLI/Debug Task started\r\n");
-
+	storedData.notifyBits = 0;
 	while(1)
 	{
 
@@ -161,12 +161,16 @@ void DebugTask(void *pvParameters)
 
 		if( xResult == pdPASS )
 		{
+			SEGGER_RTT_printf(0,"debug %d\r\n",notifyData.notifyBits);
+
 			while ( !(kUART_TxDataRegEmptyFlag & UART_GetStatusFlags(DEBUG_UART)) )
 			{
 				; // wait for tx buffer to be empty so we can send a byte
 			}
 			// output information to debug port
 			UART_WriteByte(DEBUG_UART, notifyData.notityBytes[0]);
+			storedData.notifyBits = notifyData.notifyBits;
+			vTaskDelay(1);
 
 		}
 		else
@@ -179,7 +183,8 @@ void DebugTask(void *pvParameters)
 					; // wait for tx buffer to be empty so we can send a byte
 				}
 				// output information to debug port
-				UART_WriteByte(DEBUG_UART, notifyData.notityBytes[0]);
+				UART_WriteByte(DEBUG_UART, storedData.notityBytes[0]);
+				vTaskDelay(1);
 			}
 
 		}

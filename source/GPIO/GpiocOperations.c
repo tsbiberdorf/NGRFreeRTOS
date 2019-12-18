@@ -41,7 +41,7 @@ static uint32_t tl_ButtonPressed = false;
 static uint32_t tl_ChangeConfigurationFlag = 0;
 const char *GpioTaskName = "GpioTask";
 
-volatile uint32_t ts_IrqCount = 0;
+//volatile uint32_t ts_IrqCount = 0;
 
 typedef enum _PinSelection_e
 {
@@ -199,10 +199,12 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 
 	GPIO_TogglePinsOutput(GPIOC,LED2);
 	GPIO_SetPinsOutput(GPIOC,LED1);
+	uint16_t currentPin1TestCount = 0;
 
 	uint16_t pin1TestCount;
 	size_t sentSize = 0;
 	size_t length;
+	currentPin1TestCount = ts_Pin1TestCount;
 	char *ptrDetails = CurrentConfigurationPtr;
 	length = strlen(pinConfigStr1);
 	memcpy(ptrDetails,pinConfigStr1,length);
@@ -295,8 +297,7 @@ void getInputPinConfiguration(char *CurrentConfigurationPtr,size_t *Size)
 	ptrDetails += length;
 	sentSize += length;
 
-	pin1TestCount = ts_Pin1TestCount;
-	length = sprintf(ptrDetails,"%d\r\n",pin1TestCount);
+	length = sprintf(ptrDetails,"%d\r\n",currentPin1TestCount);
 	ptrDetails += length;
 	sentSize += length;
 
@@ -350,8 +351,26 @@ static void GpioTask(void *pvParameters)
 		if( currentPin1TestCount != ts_Pin1TestCount)
 		{
 			currentPin1TestCount = ts_Pin1TestCount;
-			xTaskNotify(GetLedTaskHandle(),0x1,eSetBits);
-			xTaskNotify(GetDebugdTaskHandle(),(uint32_t)ts_Pin1TestCount,eSetBits);
+			SEGGER_RTT_printf(0,"irq cnt: %d\r\n",currentPin1TestCount);
+			if(currentPin1TestCount)
+			{
+				SEGGER_RTT_printf(0,"debug ");
+				if(xTaskNotify(GetDebugdTaskHandle(),(uint32_t)currentPin1TestCount,eSetBits) == pdPASS)
+				{
+					SEGGER_RTT_printf(0,"sent\r\n");
+				}
+				SEGGER_RTT_printf(0,"LED  ");
+				if( xTaskNotify(GetLedTaskHandle(),0x1,eSetBits) == pdPASS )
+				{
+					SEGGER_RTT_printf(0,"sent\r\n");
+				}
+				else
+				{
+					SEGGER_RTT_printf(0,"fail\r\n");
+				}
+				SEGGER_RTT_printf(0,"done\r\n");
+
+			}
 		}
 		vTaskDelay(1000);
 	}
